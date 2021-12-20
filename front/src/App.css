@@ -1,0 +1,15 @@
+.MainDiv {
+  background-color: #ffffff;
+  text-align: center;
+}
+.InputBox {
+  width: 10px;
+}
+
+.locations {
+  display: inline-block;
+  position: relative;
+}
+.Park{
+  background-color: #FFD233;
+}
