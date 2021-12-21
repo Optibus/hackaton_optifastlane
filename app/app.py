@@ -48,7 +48,7 @@ def routes_options():
 
         prev_pay_result = None
         while True:
-            pay_result = pray_calculator.calculate(start_time, user_input)
+            pay_result = pay_calculator.calculate(start_time, user_input)
             if pay_result['end_time'] > user_input.latest_arrival_time:
                 pay_result = prev_pay_result if prev_pay_result else pay_result
                 break
