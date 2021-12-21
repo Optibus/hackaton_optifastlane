@@ -98,34 +98,52 @@ def routes_options_by_address():
         prev_pray_result = None
         time_now = datetime.now()
         start_time = time_now.hour * 60 + time_now.minute
+        min_cost_result = None
         while True:
             pray_result = pray_calculator.calculate_by_address_input(start_time, user_input)
             if pray_result['end_time'] > user_input.latest_arrival_time:
                 pray_result = prev_pray_result if prev_pray_result else pray_result
+                if min_cost_result is not None and min_cost_result['cost'] < pray_result['cost'] \
+                        and user_input.cost_time_slider <= 0.5:
+                    pray_result = min_cost_result
                 break
             prev_pray_result = pray_result
+            if min_cost_result is None or pray_result['cost'] <= min_cost_result['cost']:
+                min_cost_result = pray_result
             start_time = start_time + 5
 
         prev_pay_result = None
         time_now = datetime.now()
         start_time = time_now.hour * 60 + time_now.minute
+        min_cost_result = None
         while True:
             pay_result = pay_calculator.calculate_by_address_input(start_time, user_input)
             if pay_result['end_time'] > user_input.latest_arrival_time:
                 pay_result = prev_pay_result if prev_pay_result else pay_result
+                if min_cost_result is not None and min_cost_result['cost'] < pay_result['cost'] \
+                        and user_input.cost_time_slider <= 0.5:
+                    pay_result = min_cost_result
                 break
             prev_pay_result = pay_result
+            if min_cost_result is None or pay_result['cost'] <= min_cost_result['cost']:
+                min_cost_result = pay_result
             start_time = start_time + 5
 
         prev_park_result = None
         time_now = datetime.now()
         start_time = time_now.hour * 60 + time_now.minute
+        min_cost_result = None
         while True:
             park_result = park_calculator.calculate_by_address_input(start_time, user_input)
             if park_result['end_time'] > user_input.latest_arrival_time:
                 park_result = prev_park_result if prev_park_result else park_result
+                if min_cost_result is not None and min_cost_result['cost'] < park_result['cost'] \
+                        and user_input.cost_time_slider <= 0.5:
+                    park_result = min_cost_result
                 break
             prev_park_result = park_result
+            if min_cost_result is None or park_result['cost'] <= min_cost_result['cost']:
+                min_cost_result = park_result
             start_time = start_time + 5
         return ({
                     'pray_result': pray_result,
