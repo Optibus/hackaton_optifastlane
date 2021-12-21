@@ -13,14 +13,14 @@ class GoogleMapsOperator:
         key = os.environ.get(api_key_env_var)
         self.gmaps = googlemaps.Client(key=key)
 
-    def calculate_trip(self, origin_long, origin_lat, destination_long, destination_lat, minutes_from_now=0):
+    def calculate_trip(self, origin_long, origin_lat, destination_long, destination_lat, minutes_from_now=0,
+                       avoid_tolls=True):
         origin = "{},{}".format(origin_lat, origin_long)
         target = "{},{}".format(destination_lat, destination_long)
         arrival_time = datetime.now() + timedelta(minutes=minutes_from_now)
         directions = self.gmaps.directions(origin, target,
-                              mode="driving",
-                              arrival_time=arrival_time)
-        logging.debug("response from google maps: {}".format(directions))
+                                           mode="driving",
+                                           arrival_time=arrival_time,
+                                           avoid="tolls" if avoid_tolls else None)
+        logging.info("response from google maps: {}".format(directions))
         return directions[0]["legs"][0]["duration"]["value"] / 60.0
-
-
