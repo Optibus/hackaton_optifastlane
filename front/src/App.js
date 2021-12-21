@@ -17,14 +17,13 @@ class Locations extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {value:0,startValue: '', endValue: '', timeValue:''};
+    this.state = {value:0,startValue: '', endValue: '', timeValue:0, parkCost:0};
     // const [ value, setValue ] = useState(40); 
     this.sliderValue = {slider:40} 
     this.handleChangeStart = this.handleChangeStart.bind(this);
     this.handleChangeEnd = this.handleChangeEnd.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChangeTime = this.handleChangeTime.bind(this);
-
   }
   
   handleChangeStart(event) {
@@ -38,13 +37,11 @@ class Locations extends React.Component {
   }
 
   handleChangeTime(timeToArrive) {
-    var hoursToMin = timeToArrive.hours() * 60
-    var min = timeToArrive.minutes() 
-    alert (hoursToMin + min) 
-  //   alert(timeToArrive.duration())
-  //  alert(moment.duration().minutes(timeToArrive))
-  //   alert(moment.duration().hours(timeToArrive) * 60)
-    // this.setState({timeValue: timeToArrive});
+    if (timeToArrive != null){
+      var hoursToMin = timeToArrive.hours() * 60
+      var min = timeToArrive.minutes() 
+      this.setState({timeValue: hoursToMin + min})
+    }
   }
 
 
@@ -52,11 +49,12 @@ class Locations extends React.Component {
     axios.post('http://localhost:5000/routes_options/by_address', {
       "source":  this.state.startValue,
       "target": this.state.endValue,
-      "latest_arrival_time": 148
+      "latest_arrival_time": this.state.timeValue
     })
     .then(function (response) {
-      console.log(response);
-    })
+      alert(response.data.park_result.cost)
+      this.setState({parkCost: response.data.park_result.cost})
+    }.bind(this))
     .catch(function (error) {
       console.log(error);
     });
@@ -100,25 +98,15 @@ class Locations extends React.Component {
 </div>
 <InputGroup className="mb-3  mx-auto  w-25" >
    <Button variant="success" onClick={this.handleSubmit} className='mx-auto'>Go!</Button></InputGroup>
-      </div>
-    );
-  }
-}
 
-
-
-
-
-function Cards(){
-  return(
-    <InputGroup className="mb-3  mx-auto  w-25" >
+   <InputGroup className="mb-3  mx-auto  w-25" >
     <Card style={{ width: '20rem' }} className="bg-warning">
   <Card.Body>
     <Card.Title>Park</Card.Title>
     <Card.Text>
-      Total Cost
+      Total Cost:
       <br/>
-      -total_cost-
+      {this.state.parkCost}
       <br/>
       Total Time
       <br/>
@@ -168,6 +156,10 @@ function Cards(){
   </Card.Body>
 </Card>
 </InputGroup>
-  )
+      </div>
+    );
+  }
 }
-export {Locations, Cards };
+
+
+export {Locations };
