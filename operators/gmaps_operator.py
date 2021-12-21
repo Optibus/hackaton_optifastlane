@@ -17,7 +17,7 @@ class GoogleMapsOperator:
                        avoid_tolls=True):
         origin = self.geo_to_address_format(origin_long, origin_lat)
         target = self.geo_to_address_format(destination_long, destination_lat)
-        self.calculate_trip_by_address(origin, target, minutes_from_now, avoid_tolls)
+        return self.calculate_trip_by_address(origin, target, minutes_from_now, avoid_tolls)
 
 
     def calculate_trip_by_address(self, origin: str, destination: str, minutes_from_now=0,
