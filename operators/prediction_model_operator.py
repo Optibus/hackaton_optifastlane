@@ -1,5 +1,5 @@
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 
 price_0 = -3.55  # -3.550434103027726
 drive_time_coef = 2.28  # 2.2815069806518506
@@ -14,7 +14,6 @@ class PredictionModelOperator(object):
         self.prices_df = pd.read_csv('../resources/prices.txt',
                                      names=['date_time', 'drive_time', 'xx', 'price'])
         self.prices_df['dow'] = pd.to_datetime(self.prices_df.date_time).dt.dayofweek
-
         self.prices_df['time'] = pd.to_datetime(self.prices_df.date_time)
         self.prices_df['day'] = self.prices_df.time.dt.date
         self.prices_df['tod'] = pd.to_datetime(self.prices_df.date_time).dt.hour * 60 + pd.to_datetime(
@@ -33,19 +32,30 @@ class PredictionModelOperator(object):
         if delta < 5.0:
             tmp = self.prices_df[(self.prices_df.tod == cur_time) & (self.prices_df.day == cur_date)]
         else:
-            tmp = self.prices_df[(self.prices_df.tod <= cur_time - delta) & (self.prices_df.dow == cur_date)]
+            tmp = self.prices_df[(self.prices_df.tod <= cur_time - delta) & (self.prices_df.day == cur_date)]
         if not len(tmp):
-            return self.last_price(cur_time, cur_date, delta - 5)
+            if len(self.prices_df[self.prices_df.day == cur_date]) > 0:
+                return self.last_price(cur_time, cur_date, delta - 5)
+            tmp = self.prices_df[(self.prices_df.tod <= cur_time - delta) & (self.prices_df.dow == cur_date.weekday())]
         return tmp.price.iloc[-1]
 
     def get_cost(self, drive_time):
-        today_dow = datetime.today().weekday()
-        last_price_60 = self.last_price(drive_time, today_dow, delta=60)
-        last_price_75 = self.last_price(drive_time, today_dow, delta=75)
+        cur_time = datetime.today().hour * 60 + datetime.today().minute
+        cur_date = datetime.today().date()
+        delta = 60
+        if cur_time - delta < 0:
+            cur_time = 60 * 24 - cur_time
+            cur_date = datetime.today() - timedelta(days=1)
+        last_price_60 = self.last_price(cur_time, cur_date, delta=delta)
+        delta = 75
+        if cur_time - delta < 0:
+            cur_time = 60 * 24 - cur_time
+            cur_date = datetime.today() - timedelta(days=1)
+        last_price_75 = self.last_price(cur_time, cur_date, delta=delta)
         return self.price_prediction(drive_time, last_price_60, last_price_75)
 
 
 if __name__ == '__main__':
     pred_model = PredictionModelOperator()
-    res = pred_model.get_cost(600)
+    res = pred_model.get_cost(14)
     print(res)
