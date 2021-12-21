@@ -34,10 +34,10 @@ def routes_options():
 
     try:
         print("user_input={}".format(user_input))
-        time_now = datetime.now()
-        start_time = time_now.hour * 60 + time_now.minute
 
         prev_pray_result = None
+        time_now = datetime.now()
+        start_time = time_now.hour * 60 + time_now.minute
         while True:
             pray_result = pray_calculator.calculate(start_time, user_input)
             if pray_result['end_time'] > user_input.latest_arrival_time:
@@ -47,6 +47,8 @@ def routes_options():
             start_time = start_time + 5
 
         prev_pay_result = None
+        time_now = datetime.now()
+        start_time = time_now.hour * 60 + time_now.minute
         while True:
             pay_result = pay_calculator.calculate(start_time, user_input)
             if pay_result['end_time'] > user_input.latest_arrival_time:
@@ -56,6 +58,8 @@ def routes_options():
             start_time = start_time + 5
 
         prev_park_result = None
+        time_now = datetime.now()
+        start_time = time_now.hour * 60 + time_now.minute
         while True:
             park_result = park_calculator.calculate(start_time, user_input)
             if park_result['end_time'] > user_input.latest_arrival_time:
@@ -90,10 +94,10 @@ def routes_options_by_address():
 
     try:
         print("user_input={}".format(user_input))
-        time_now = datetime.now()
-        start_time = time_now.hour * 60 + time_now.minute
 
         prev_pray_result = None
+        time_now = datetime.now()
+        start_time = time_now.hour * 60 + time_now.minute
         while True:
             pray_result = pray_calculator.calculate_by_address_input(start_time, user_input)
             if pray_result['end_time'] > user_input.latest_arrival_time:
@@ -103,6 +107,8 @@ def routes_options_by_address():
             start_time = start_time + 5
 
         prev_pay_result = None
+        time_now = datetime.now()
+        start_time = time_now.hour * 60 + time_now.minute
         while True:
             pay_result = pay_calculator.calculate_by_address_input(start_time, user_input)
             if pay_result['end_time'] > user_input.latest_arrival_time:
@@ -112,6 +118,8 @@ def routes_options_by_address():
             start_time = start_time + 5
 
         prev_park_result = None
+        time_now = datetime.now()
+        start_time = time_now.hour * 60 + time_now.minute
         while True:
             park_result = park_calculator.calculate_by_address_input(start_time, user_input)
             if park_result['end_time'] > user_input.latest_arrival_time:
