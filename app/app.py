@@ -24,7 +24,8 @@ def routes_options():
         payload_json["source_lon"],
         payload_json["source_lat"],
         payload_json["target_lon"],
-        payload_json["target_lat"]
+        payload_json["target_lat"],
+        payload_json["latest_arrival_time"]
     )
 
     try:
