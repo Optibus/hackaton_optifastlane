@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import {Locations, Cards} from './App';
+import {Locations} from './App';
 import reportWebVitals from './reportWebVitals';
 import "antd/dist/antd.css";
 
@@ -9,7 +9,6 @@ import "antd/dist/antd.css";
 ReactDOM.render(
   <React.StrictMode>
     <Locations/>
-    <Cards/>
   </React.StrictMode>,
   document.getElementById('root')
 );
