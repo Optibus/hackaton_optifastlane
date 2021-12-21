@@ -33,15 +33,40 @@ def routes_options():
         print("user_input={}".format(user_input))
         time_now = datetime.now()
         start_time = time_now.hour * 60 + time_now.minute
-        pray_result = pray_calculator.calculate(start_time, user_input)
-        pay_result = pay_calculator.calculate(start_time, user_input)
-        park_result = park_calculator.calculate(start_time, user_input)
+        
+        prev_pray_result = None
+        while True:
+            pray_result = pray_calculator.calculate(start_time, user_input)
+            if pray_result['end_time'] > user_input.latest_arrival_time:
+                pray_result = prev_pray_result if prev_pray_result else pray_result
+                break
+            prev_pray_result = pray_result
+            start_time = start_time + 5
+
+        prev_pay_result = None
+        while True:
+            pay_result = pray_calculator.calculate(start_time, user_input)
+            if pay_result['end_time'] > user_input.latest_arrival_time:
+                pay_result = prev_pay_result if prev_pay_result else pay_result
+                break
+            prev_pay_result = pay_result
+            start_time = start_time + 5
+
+        prev_park_result = None
+        while True:
+            park_result = park_calculator.calculate(start_time, user_input)
+            if park_result['end_time'] > user_input.latest_arrival_time:
+                park_result = prev_park_result if prev_park_result else park_result
+                break
+            prev_park_result = park_result
+            start_time = start_time + 5
         return ({
                     'pray_result': pray_result,
                     'pay_result': pay_result,
                     'park_result': park_result,
                 },
                 200)
+
     except Error as error:
         logging.exception(error)
         return jsonify(error), error.status_code
