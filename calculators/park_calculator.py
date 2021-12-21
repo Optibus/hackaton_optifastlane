@@ -2,19 +2,18 @@ from calculators.calculator import Calculator
 from models.option_result import OptionResult
 from models.user_input import UserInput
 from utils.constants import FAST_LANE_START_LON, FAST_LANE_START_LAT, FAST_LANE_END_LON, FAST_LANE_END_LAT, \
-    PARKING_TIME, COST_PER_MINUTES_BY_CAR
+    PARKING_TIME, COST_PER_MINUTES_BY_CAR, FAST_LANE_START_ADDRESS, FAST_LANE_END_ADDRESS
+from utils.constants import FAST_LANE_START_LON, FAST_LANE_START_LAT, FAST_LANE_START_ADDRESS
 
 
 class ParkCalculator(Calculator):
-    def calculate(self, start_time, user_input: UserInput):
-        source_to_fastlane_time = self.gmaps_operator.calculate_trip(user_input.source_lon, user_input.source_lat,
-                                                                     FAST_LANE_START_LON, FAST_LANE_START_LAT)
+    def _calculate_by_address(self, start_time: float, source_address: str, target_address: str):
+        source_to_fastlane_time = self.gmaps_operator.calculate_trip_by_address(source_address, FAST_LANE_START_ADDRESS)
 
-        fastline_time = self.gmaps_operator.calculate_trip(FAST_LANE_START_LON, FAST_LANE_START_LAT,
-                                                           FAST_LANE_END_LON, FAST_LANE_END_LAT, avoid_tolls=False)
+        fastline_time = self.gmaps_operator.calculate_trip_by_address(FAST_LANE_START_ADDRESS,
+                                                           FAST_LANE_END_ADDRESS, avoid_tolls=False)
 
-        fastlane_to_target_time = self.gmaps_operator.calculate_trip(FAST_LANE_END_LON, FAST_LANE_END_LAT,
-                                                                     user_input.target_lon, user_input.target_lat)
+        fastlane_to_target_time = self.gmaps_operator.calculate_trip_by_address(FAST_LANE_END_ADDRESS, target_address)
 
         after_parking_time = fastline_time + fastlane_to_target_time + PARKING_TIME
 

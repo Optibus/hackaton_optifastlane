@@ -8,11 +8,14 @@ from calculators.park_calculator import ParkCalculator
 from calculators.pay_calculator import PayCalculator
 from calculators.pray_calculator import PrayCalculator
 from models.user_input import UserInput
+from models.user_input_by_address import UserInputByAddress
+from operators.gmaps_operator import GoogleMapsOperator
 from datetime import datetime
 from operators.waze_operator import WazeOperator
 
 app = Flask(__name__)
 
+gmaps_operator = GoogleMapsOperator()
 waze_operator = WazeOperator()
 pray_calculator = PrayCalculator()
 pay_calculator = PayCalculator()
@@ -33,7 +36,7 @@ def routes_options():
         print("user_input={}".format(user_input))
         time_now = datetime.now()
         start_time = time_now.hour * 60 + time_now.minute
-        
+
         prev_pray_result = None
         while True:
             pray_result = pray_calculator.calculate(start_time, user_input)
@@ -74,4 +77,59 @@ def routes_options():
         logging.exception(error)
         return {'message': 'Internal Server Error'}, 500
 
+
+@app.route("/routes_options/by_address", methods=["POST"])
+def routes_options_by_address():
+    payload_json = request.get_json()
+    user_input = UserInputByAddress(
+        payload_json["source"],
+        payload_json["target"],
+        payload_json["latest_arrival_time"]
+    )
+
+
+    try:
+        print("user_input={}".format(user_input))
+        time_now = datetime.now()
+        start_time = time_now.hour * 60 + time_now.minute
+
+        prev_pray_result = None
+        while True:
+            pray_result = pray_calculator.calculate_by_address_input(start_time, user_input)
+            if pray_result['end_time'] > user_input.latest_arrival_time:
+                pray_result = prev_pray_result if prev_pray_result else pray_result
+                break
+            prev_pray_result = pray_result
+            start_time = start_time + 5
+
+        prev_pay_result = None
+        while True:
+            pay_result = pray_calculator.calculate_by_address_input(start_time, user_input)
+            if pay_result['end_time'] > user_input.latest_arrival_time:
+                pay_result = prev_pay_result if prev_pay_result else pay_result
+                break
+            prev_pay_result = pay_result
+            start_time = start_time + 5
+
+        prev_park_result = None
+        while True:
+            park_result = park_calculator.calculate_by_address_input(start_time, user_input)
+            if park_result['end_time'] > user_input.latest_arrival_time:
+                park_result = prev_park_result if prev_park_result else park_result
+                break
+            prev_park_result = park_result
+            start_time = start_time + 5
+        return ({
+                    'pray_result': pray_result,
+                    'pay_result': pay_result,
+                    'park_result': park_result,
+                },
+                200)
+
+    except Error as error:
+        logging.exception(error)
+        return jsonify(error), error.status_code
+    except Exception as error:
+        logging.exception(error)
+        return {'message': 'Internal Server Error'}, 500
 
