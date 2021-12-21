@@ -13,50 +13,84 @@ import RangeSlider from 'react-bootstrap-range-slider';
 const axios = require('axios').default;
 const format = 'HH:mm';
 
-function fetchData(){
-  axios.post('http://localhost:5000/routes_options', {
-    "source_lon": 34.835387,
-    "source_lat": 32.008449,
-    "target_lon": 34.900114,
-    "target_lat": 31.967937
-  })
-  .then(function (response) {
-    console.log(response);
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
-}
+class Locations extends React.Component {
 
-function Locations() {
-  return (
-    <div className="MainDiv" >
-      <br></br>
-      <InputGroup className="mb-3 shadow-sm mx-auto InputBox w-25">
-      <InputGroup.Text id="inputGroup-sizing-default">Start</InputGroup.Text>
-      <FormControl aria-label="Default" aria-describedby="inputGroup-sizing-default" />
-      </InputGroup>
-      <InputGroup className="mb-3 shadow-sm mx-auto InputBox w-25" >
-      <InputGroup.Text id="inputGroup-sizing-default">End</InputGroup.Text>
-      <FormControl aria-label="Default" aria-describedby="inputGroup-sizing-default" />
-      </InputGroup>
-      <label>Latest time to arrive: &nbsp;</label>
-      <TimePicker defaultValue={moment('12:08', format)}  className="locations"  format={format} /> 
-    </div>
-  );
-}
+  constructor(props) {
+    super(props);
+    this.state = {value:0,startValue: '', endValue: '', timeValue:''};
+    // const [ value, setValue ] = useState(40); 
+    this.sliderValue = {slider:40} 
+    this.handleChangeStart = this.handleChangeStart.bind(this);
+    this.handleChangeEnd = this.handleChangeEnd.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChangeTime = this.handleChangeTime.bind(this);
 
-function Slider(){
-  const [ value, setValue ] = useState(40); 
-  return(  <div className="container">
+  }
+  
+  handleChangeStart(event) {
+    // alert(this.state.startValue)
+    this.setState({startValue: event.target.value});
+  }
+
+  handleChangeEnd(event) {
+    // alert(this.state.endValue)
+    this.setState({endValue: event.target.value});
+  }
+
+  handleChangeTime(timeToArrive) {
+    var hoursToMin = timeToArrive.hours() * 60
+    var min = timeToArrive.minutes() 
+    alert (hoursToMin + min) 
+  //   alert(timeToArrive.duration())
+  //  alert(moment.duration().minutes(timeToArrive))
+  //   alert(moment.duration().hours(timeToArrive) * 60)
+    // this.setState({timeValue: timeToArrive});
+  }
+
+
+  handleSubmit(event){
+    axios.post('http://localhost:5000/routes_options/by_address', {
+      "source":  this.state.startValue,
+      "target": this.state.endValue,
+      "latest_arrival_time": 148
+    })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+
+  render() {
+    
+    return (
+      <div className="MainDiv" >
+        <br></br>
+        <InputGroup className="mb-3 shadow-sm mx-auto InputBox w-25">
+        <InputGroup.Text id="Start" >Start</InputGroup.Text>
+        <FormControl aria-label="Default" aria-describedby="Start" value={this.state.startValue} onChange={this.handleChangeStart} />
+        </InputGroup>
+        <br></br>
+        <InputGroup className="mb-3 shadow-sm mx-auto InputBox w-25" >
+        <InputGroup.Text id="end">End</InputGroup.Text>
+        <FormControl aria-label="Default" aria-describedby="end" value={this.state.endValue} onChange={this.handleChangeEnd} />
+        </InputGroup>
+              <br></br>
+        <label>Latest time to arrive: &nbsp;</label>
+        <TimePicker defaultValue={moment('12:08', format)}  className="locations"  onChange={this.handleChangeTime} format={format} /> 
+        <br></br>
+        <br></br>
+        <div className="container">
   <div className="row mx-auto">
+  <div className="col-3"></div>
     <div className="col-1">
     <InputGroup className="mb-3  mx-auto  w-25" > <Form.Label> Cost</Form.Label> </InputGroup>
     </div>
     <div className="col-4">
     <RangeSlider
-            value={value}
-            onChange={e => setValue(e.target.value)}
+            value={this.sliderValue.value}
+            onChange={e => this.setState({value : e})}
           />
     </div>
     <div className="col-sm">
@@ -64,19 +98,16 @@ function Slider(){
     </div>
   </div>
 </div>
-)
-
-
-
+<InputGroup className="mb-3  mx-auto  w-25" >
+   <Button variant="success" onClick={this.handleSubmit} className='mx-auto'>Go!</Button></InputGroup>
+      </div>
+    );
+  }
 }
 
-function ButtonGo(){
-  
-  return  (
-  <InputGroup className="mb-3  mx-auto  w-25" >
-   <Button variant="success" onClick={fetchData} className='mx-auto'>Go!</Button></InputGroup>
-  ) 
-}
+
+
+
 
 function Cards(){
   return(
@@ -139,4 +170,4 @@ function Cards(){
 </InputGroup>
   )
 }
-export {Locations, Cards, Slider, ButtonGo };
+export {Locations, Cards };
