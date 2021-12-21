@@ -8,6 +8,7 @@ from calculators.park_calculator import ParkCalculator
 from calculators.pay_calculator import PayCalculator
 from calculators.pray_calculator import PrayCalculator
 from models.user_input import UserInput
+from datetime import datetime
 from operators.waze_operator import WazeOperator
 
 app = Flask(__name__)
@@ -30,13 +31,15 @@ def routes_options():
 
     try:
         print("user_input={}".format(user_input))
-        pray_result = pray_calculator.calculate(user_input)
-        pay_result = pay_calculator.calculate(user_input)
-        park_result = park_calculator.calculate(user_input)
+        time_now = datetime.now()
+        start_time = time_now.hour * 60 + time_now.minute
+        pray_result = pray_calculator.calculate(start_time, user_input)
+        pay_result = pay_calculator.calculate(start_time, user_input)
+        park_result = park_calculator.calculate(start_time, user_input)
         return ({
-                   'pray_result': pray_result,
-                   'pay_result': pay_result,
-                   'park_result': park_result,
+                    'pray_result': pray_result,
+                    'pay_result': pay_result,
+                    'park_result': park_result,
                 },
                 200)
     except Error as error:

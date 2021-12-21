@@ -11,7 +11,7 @@ class PayCalculator(Calculator):
         super().__init__()
         self.prediction_model_operator = PredictionModelOperator()
 
-    def calculate(self, user_input: UserInput):
+    def calculate(self, start_time, user_input: UserInput):
         source_to_fastlane_time = self.gmaps_operator.calculate_trip(user_input.source_lon, user_input.source_lat,
                                                                      FAST_LANE_START_LON, FAST_LANE_START_LAT)
 
@@ -21,9 +21,9 @@ class PayCalculator(Calculator):
         fastline_time = self.gmaps_operator.calculate_trip(FAST_LANE_START_LON, FAST_LANE_START_LAT,
                                                            FAST_LANE_END_LON, FAST_LANE_END_LAT, avoid_tolls=False)
 
-        fastlane_cost = self.prediction_model_operator.get_cost(fastline_time)
+        fastlane_cost = self.prediction_model_operator.get_cost(start_time, fastline_time)
 
         total_time = fastline_time + source_to_fastlane_time + fastlane_to_target_time
 
         total_cost = total_time * COST_PER_MINUTES_BY_CAR + fastlane_cost + PARKING_COST
-        return OptionResult(total_time, total_cost)
+        return OptionResult(start_time, start_time + total_time, total_cost)

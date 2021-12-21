@@ -5,10 +5,10 @@ from utils.constants import COST_PER_MINUTES_BY_CAR, PARKING_COST
 
 
 class PrayCalculator(Calculator):
-    def calculate(self, user_input: UserInput):
+    def calculate(self, start_time, user_input: UserInput):
         gmaps_time = self.gmaps_operator.calculate_trip(
             user_input.source_lon, user_input.source_lat, user_input.target_lon, user_input.target_lat
         )
 
         cost = COST_PER_MINUTES_BY_CAR * gmaps_time + PARKING_COST
-        return OptionResult(gmaps_time, cost)
+        return OptionResult(start_time, start_time + gmaps_time, cost)

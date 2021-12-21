@@ -1,6 +1,9 @@
 import pandas as pd
 from datetime import datetime, timedelta
 
+from resources.last_prices import LAST_PRICES
+from utils.constants import FAST_LANE_DEFAULT_PRICE
+
 price_0 = -3.55  # -3.550434103027726
 drive_time_coef = 2.28  # 2.2815069806518506
 last_price_60_coef = 0.06  # 0.05924936537076222
@@ -11,7 +14,7 @@ FIX_START = 26
 
 class PredictionModelOperator(object):
     def __init__(self):
-        self.prices_df = pd.read_csv('../resources/prices.txt',
+        self.prices_df = pd.read_csv('resources/prices.txt',
                                      names=['date_time', 'drive_time', 'xx', 'price'])
         self.prices_df['dow'] = pd.to_datetime(self.prices_df.date_time).dt.dayofweek
         self.prices_df['time'] = pd.to_datetime(self.prices_df.date_time)
@@ -37,10 +40,14 @@ class PredictionModelOperator(object):
             if len(self.prices_df[self.prices_df.day == cur_date]) > 0:
                 return self.last_price(cur_time, cur_date, delta - 5)
             tmp = self.prices_df[(self.prices_df.tod <= cur_time - delta) & (self.prices_df.dow == cur_date.weekday())]
+            if not len(tmp):
+                tmp = [v for k, v in LAST_PRICES.items() if k <= cur_time - delta]
+                if not len(tmp):
+                    return FAST_LANE_DEFAULT_PRICE
         return tmp.price.iloc[-1]
 
-    def get_cost(self, drive_time):
-        cur_time = datetime.today().hour * 60 + datetime.today().minute
+    def get_cost(self, start_time, drive_time):
+        cur_time = start_time
         cur_date = datetime.today().date()
         delta = 60
         if cur_time - delta < 0:
@@ -57,5 +64,5 @@ class PredictionModelOperator(object):
 
 if __name__ == '__main__':
     pred_model = PredictionModelOperator()
-    res = pred_model.get_cost(14)
+    res = pred_model.get_cost(8 * 60, 30)
     print(res)
