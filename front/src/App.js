@@ -17,7 +17,7 @@ class Locations extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {value:0,startValue: '', endValue: '', timeValue:0, parkCost:0};
+    this.state = {value:0,startValue: '', endValue: '', timeValue:0, parkCost:0, parkDep:0, parkEta:0, payCost:0, payDep:0, payEta:0, prayCost:0, prayDep:0, prayEta:0};
     // const [ value, setValue ] = useState(40); 
     this.sliderValue = {slider:40} 
     this.handleChangeStart = this.handleChangeStart.bind(this);
@@ -51,9 +51,16 @@ class Locations extends React.Component {
       "target": this.state.endValue,
       "latest_arrival_time": this.state.timeValue
     })
-    .then(function (response) {
-      alert(response.data.park_result.cost)
+    .then(function (response) { 
       this.setState({parkCost: response.data.park_result.cost})
+      this.setState({parkDep: response.data.park_result.start_time})
+      this.setState({parkEta: response.data.park_result.end_time})
+      this.setState({payCost: response.data.pay_result.cost})
+      this.setState({payDep: response.data.pay_result.start_time})
+      this.setState({payEta: response.data.pay_result.end_time})
+      this.setState({prayCost: response.data.pray_result.cost})
+      this.setState({prayDep: response.data.pray_result.start_time})
+      this.setState({prayEta: response.data.pray_result.end_time})
     }.bind(this))
     .catch(function (error) {
       console.log(error);
@@ -108,13 +115,13 @@ class Locations extends React.Component {
       <br/>
       {this.state.parkCost}
       <br/>
-      Total Time
+      Departure Time:
       <br/>
-      -total_time-
+      {moment.utc().startOf('day').add(this.state.parkDep, 'minutes').format('HH:MM')}
       <br/>
-      Total CO2 Emissions
+      ETA:
       <br/>
-      -total_co2-
+      {moment.utc().startOf('day').add(this.state.parkEta, 'minutes').format('HH:MM')}
     </Card.Text>
   </Card.Body>
 </Card>
@@ -122,17 +129,17 @@ class Locations extends React.Component {
   <Card.Body>
     <Card.Title>Pay</Card.Title>
     <Card.Text>
-      Total Cost
+    Total Cost:
       <br/>
-      -total_cost-
+      {this.state.payCost}
       <br/>
-      Total Time
+      Departure Time:
       <br/>
-      -total_time-
+      {moment.utc().startOf('day').add(this.state.payDep, 'minutes').format('HH:MM')}
       <br/>
-      Total CO2 Emissions
+      ETA:
       <br/>
-      -total_co2-
+      {moment.utc().startOf('day').add(this.state.payEta, 'minutes').format('HH:MM')}
     </Card.Text>
   </Card.Body>
 </Card>
@@ -141,17 +148,17 @@ class Locations extends React.Component {
   <Card.Body>
     <Card.Title>Pray</Card.Title>
     <Card.Text>
-      Total Cost
+      Total Cost:
       <br/>
-      -total_cost-
+      {this.state.prayCost}
       <br/>
-      Total Time
+      Departure Time:
       <br/>
-      -total_time-
+      {moment.utc().startOf('day').add(this.state.prayDep, 'minutes').format('HH:MM')}
       <br/>
-      Total CO2 Emissions
+      ETA:
       <br/>
-      -total_co2-
+      {moment.utc().startOf('day').add(this.state.prayEta, 'minutes').format('HH:MM')}
     </Card.Text>
   </Card.Body>
 </Card>
