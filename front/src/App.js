@@ -52,6 +52,7 @@ class Locations extends React.Component {
       "latest_arrival_time": this.state.timeValue
     })
     .then(function (response) { 
+      console.log(response)
       this.setState({parkCost: response.data.park_result.cost})
       this.setState({parkDep: response.data.park_result.start_time})
       this.setState({parkEta: response.data.park_result.end_time})
@@ -65,6 +66,14 @@ class Locations extends React.Component {
     .catch(function (error) {
       console.log(error);
     });
+  }
+
+  convertMin(mint) {
+    var h = Math.floor(mint / 60);
+    var m = mint % 60;
+    h = h < 10 ? '0' + h : h; 
+    m = m < 10 ? '0' + m : m; 
+    return h + ':' + m;
   }
 
   render() {
@@ -113,15 +122,15 @@ class Locations extends React.Component {
     <Card.Text>
       Total Cost:
       <br/>
-      {this.state.parkCost}
+      {Math.round(this.state.parkCost)}
       <br/>
       Departure Time:
       <br/>
-      {moment.utc().startOf('day').add(this.state.parkDep, 'minutes').format('HH:MM')}
+      {this.convertMin(Math.round(this.state.parkDep))}
       <br/>
       ETA:
       <br/>
-      {moment.utc().startOf('day').add(this.state.parkEta, 'minutes').format('HH:MM')}
+      {this.convertMin(Math.round(this.state.parkEta))}
     </Card.Text>
   </Card.Body>
 </Card>
@@ -131,34 +140,33 @@ class Locations extends React.Component {
     <Card.Text>
     Total Cost:
       <br/>
-      {this.state.payCost}
+       {Math.round(this.state.payCost)}
       <br/>
       Departure Time:
       <br/>
-      {moment.utc().startOf('day').add(this.state.payDep, 'minutes').format('HH:MM')}
+      {this.convertMin(Math.round(this.state.payDep))}
       <br/>
       ETA:
       <br/>
-      {moment.utc().startOf('day').add(this.state.payEta, 'minutes').format('HH:MM')}
+      {this.convertMin(Math.round(this.state.payEta))}
     </Card.Text>
   </Card.Body>
-</Card>
-<br/>
+</Card> 
 <Card style={{ width: '20rem' }} className="bg-success">
   <Card.Body>
     <Card.Title>Pray</Card.Title>
     <Card.Text>
       Total Cost:
       <br/>
-      {this.state.prayCost}
+      {Math.round(this.state.prayCost)}
       <br/>
       Departure Time:
       <br/>
-      {moment.utc().startOf('day').add(this.state.prayDep, 'minutes').format('HH:MM')}
+      {this.convertMin(Math.round(this.state.prayDep))}
       <br/>
       ETA:
       <br/>
-      {moment.utc().startOf('day').add(this.state.prayEta, 'minutes').format('HH:MM')}
+      {this.convertMin(Math.round(this.state.prayEta))}
     </Card.Text>
   </Card.Body>
 </Card>
